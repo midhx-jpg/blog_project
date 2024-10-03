@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}My Blog{% endblock %}</title>
+    <link href="{% static 'css/style.css' %}" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+    <!-- Navigation -->
+    <nav class="bg-blue-600 p-4 text-white">
+        <div class="container mx-auto flex justify-between items-center">
+            <a href="{% url 'index' %}" class="text-2xl font-bold">Home</a>
+            
+            
+            <ul class="flex space-x-4">
+                {% if user.is_authenticated %}
+                    <li><a href="{% url 'blog_list_byuser' %}" class="hover:text-gray-300">My Blogs</a></li>
+                    <li><a href="{% url 'profile' %}" class="hover:text-gray-300">Profile</a></li>
+                    <li><a href="{% url 'create_post' %}" class="hover:text-gray-300">Create Post</a></li>
+                    <li>
+                        <form method="POST" action="{% url 'logout' %}" style="display: inline;">
+                            {% csrf_token %}
+                            <button type="submit" class="hover:text-gray-300" style="background: none; border: none; padding: 0; color: inherit; font: inherit; cursor: pointer;">
+                                Logout
+                            </button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}" class="hover:text-gray-300">Login</a></li>
+                    <li><a href="{% url 'signup' %}" class="hover:text-gray-300">Sign Up</a></li>
+                {% endif %}
+            </ul>
+            
+        </div>
+    </nav>
+
+    <!-- Content Block -->
+    <div class="container mx-auto py-8 ">
+        {% block content %}
+    <div class="container mx-auto py-8 justify-between items-center">
+        <div class="container mx-auto px-4 ">
+            <h1 class="text-3xl font-bold my-5">Blog Posts</h1>
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {% for post in page_obj %}
+                <div class="border p-4">
+                    <h2 class="text-xl font-semibold">{{ post.title }}</h2>
+                    <p class="text-gray-600">{{ post.content|truncatewords:20 }}</p>
+                    <a href="{% url 'blog_detail' post.id %}" class="text-blue-500">Read more</a>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="mt-4">
+                <span class="inline-block">{{ page_obj.paginator.num_pages }} pages</span>
+            </div>
+        </div>
+        {% endblock %}
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 p-4 text-white text-center">
+        <p>&copy; 2024 My Blog. All rights reserved.</p>
+    </footer>
+</body>
+</html>
